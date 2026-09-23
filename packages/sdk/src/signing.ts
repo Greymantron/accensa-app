@@ -40,16 +40,19 @@ function toHex(bytes: Uint8Array): string {
  * meaningless to another, and a failed import is never kept.
  */
 let importedKey:
-  | { privateKeyHex: string; subtle: SubtleCrypto; key: Promise<CryptoKey> }
-  | undefined;
+  { privateKeyHex: string; subtle: SubtleCrypto; key: Promise<CryptoKey> } | undefined;
 
 function importSigningKey(subtle: SubtleCrypto, privateKeyHex: string): Promise<CryptoKey> {
   if (importedKey?.privateKeyHex === privateKeyHex && importedKey.subtle === subtle) {
     return importedKey.key;
   }
-  const key = subtle.importKey('pkcs8', privateKeyPkcs8(privateKeyHex), { name: 'Ed25519' }, false, [
-    'sign',
-  ]);
+  const key = subtle.importKey(
+    'pkcs8',
+    privateKeyPkcs8(privateKeyHex),
+    { name: 'Ed25519' },
+    false,
+    ['sign'],
+  );
   const entry = { privateKeyHex, subtle, key };
   importedKey = entry;
   key.catch(() => {
@@ -59,7 +62,10 @@ function importSigningKey(subtle: SubtleCrypto, privateKeyHex: string): Promise<
 }
 
 /** Signs `payload` with the given Ed25519 seed and returns the signature as hex. */
-export async function signSettlementPayload(payload: string, privateKeyHex: string): Promise<string> {
+export async function signSettlementPayload(
+  payload: string,
+  privateKeyHex: string,
+): Promise<string> {
   const data = encoder.encode(payload);
   // Validates the key up front, so a malformed one is reported as such rather
   // than as a missing crypto backend.

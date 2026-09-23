@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { createPublicKey, generateKeyPairSync, verify } from 'node:crypto';
+import { generateKeyPairSync, verify } from 'node:crypto';
 import { privateKeyPkcs8, signSettlementPayload } from './signing';
 
 function keyPair() {
@@ -51,9 +51,9 @@ describe('signSettlementPayload', () => {
     const signature = await signSettlementPayload('payload', seedHex);
 
     expect(importKey).toHaveBeenCalledOnce();
-    expect(
-      verify(null, Buffer.from('payload'), createPublicKey(publicKey), Buffer.from(signature, 'hex')),
-    ).toBe(true);
+    expect(verify(null, Buffer.from('payload'), publicKey, Buffer.from(signature, 'hex'))).toBe(
+      true,
+    );
   });
 
   it('rejects a malformed key before touching any crypto backend', async () => {
