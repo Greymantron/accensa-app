@@ -1,4 +1,4 @@
-import { CsvPayment, CSV_BOM, escapeCsvField, toCsvRow } from '../payments-csv';
+import { CsvPayment, CSV_BOM, toCsvRow } from '../payments-csv';
 import { assetLabel } from '../money';
 
 const HEADERS = [

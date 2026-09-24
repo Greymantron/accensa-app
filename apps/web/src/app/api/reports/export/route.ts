@@ -47,59 +47,60 @@ export async function GET(request: Request) {
       const limit = 500;
       let hasMore = true;
 
-      await withMerchantClient(merchant!.id, async (client) => {
-        await ensureSchema(client);
-        
-        const predicates: string[] = [];
-        const params: (string | number)[] = [merchant!.id];
-        
-        if (filterRoute) {
-          predicates.push(`route = $${params.length + 1}`);
-          params.push(filterRoute);
-        }
-        if (filterPayer) {
-          predicates.push(`payer = $${params.length + 1}`);
-          params.push(filterPayer);
-        }
-        if (filterAsset) {
-          predicates.push(`asset = $${params.length + 1}`);
-          params.push(filterAsset);
-        }
-        if (fromDate) {
-          predicates.push(`ts >= $${params.length + 1}`);
-          params.push(fromDate.toISOString());
-        }
-        if (toDate) {
-          predicates.push(`ts <= $${params.length + 1}`);
-          params.push(toDate.toISOString());
-        }
-        
-        const filterSql = predicates.length ? ` AND ${predicates.join(' AND ')}` : '';
-        const baseQuery = `SELECT tx_hash, ledger, payer, amount::text AS amount, asset, ts, route, method 
-                           FROM payments WHERE merchant_id = $1 AND ts IS NOT NULL${filterSql} 
-                           ORDER BY ts DESC, tx_hash DESC`;
-                           
-        while (hasMore) {
+      while (hasMore) {
+        let batch: CsvPayment[] = [];
+        await withMerchantClient(merchant!.id, async (client) => {
+          await ensureSchema(client);
+          
+          const predicates: string[] = [];
+          const params: (string | number)[] = [merchant!.id];
+          
+          if (filterRoute) {
+            predicates.push(`route = $${params.length + 1}`);
+            params.push(filterRoute);
+          }
+          if (filterPayer) {
+            predicates.push(`payer = $${params.length + 1}`);
+            params.push(filterPayer);
+          }
+          if (filterAsset) {
+            predicates.push(`asset = $${params.length + 1}`);
+            params.push(filterAsset);
+          }
+          if (fromDate) {
+            predicates.push(`ts >= $${params.length + 1}`);
+            params.push(fromDate.toISOString());
+          }
+          if (toDate) {
+            predicates.push(`ts <= $${params.length + 1}`);
+            params.push(toDate.toISOString());
+          }
+          
+          const filterSql = predicates.length ? ` AND ${predicates.join(' AND ')}` : '';
+          const baseQuery = `SELECT tx_hash, ledger, payer, amount::text AS amount, asset, ts, route, method 
+                             FROM payments WHERE merchant_id = $1 AND ts IS NOT NULL${filterSql} 
+                             ORDER BY ts DESC, tx_hash DESC`;
+                             
           const query = `${baseQuery} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
           const currentParams = [...params, limit, offset];
           
           const result = await client.query(query, currentParams);
-          const rows = result.rows.map(r => ({
+          batch = result.rows.map(r => ({
              ...r,
              ts: r.ts instanceof Date ? r.ts.toISOString() : String(r.ts)
           }));
-          
-          if (rows.length === 0) {
+        });
+        
+        if (batch.length === 0) {
+          hasMore = false;
+        } else {
+          yield batch;
+          offset += limit;
+          if (batch.length < limit) {
             hasMore = false;
-          } else {
-            yield rows;
-            offset += limit;
-            if (rows.length < limit) {
-              hasMore = false;
-            }
           }
         }
-      });
+      }
     }
 
     const stream = createCsvStream(fetchPaymentBatches());
