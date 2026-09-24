@@ -12,6 +12,7 @@ import {
   AccensaAuthError,
   AccensaError,
   AccensaNetworkError,
+  createSettleHook,
   type Settlement,
 } from './index';
 
@@ -557,6 +558,76 @@ describe('attachAccensaHook', () => {
       method: 'POST',
       request_id: 'custom',
     });
+  });
+
+  it('extracts request facts correctly including array headers', async () => {
+    const fetchImpl = okFetch();
+    await runHook(
+      attachAccensaHook(opts({ fetchImpl })),
+      fakeReq({ headers: { 'x-request-id': ['req-array-1', 'req-array-2'] } }),
+      fakeRes(paid),
+    );
+    expect(bodyOf(fetchImpl).request_id).toBe('req-array-1');
+  });
+});
+
+describe('createSettleHook', () => {
+  it('reports settlement on after settle event', async () => {
+    const fetchImpl = okFetch();
+    const hook = createSettleHook(opts({ fetchImpl }));
+
+    await hook({
+      result: {
+        success: true,
+        transaction: settlement.txHash,
+        payer: settlement.payer,
+        amount: settlement.amount,
+        network: settlement.network,
+      },
+      paymentPayload: {
+        resource: { url: '/api/resource' },
+      },
+    });
+
+    expect(fetchImpl).toHaveBeenCalledOnce();
+    const body = bodyOf(fetchImpl);
+    expect(body).toMatchObject({
+      tx_hash: settlement.txHash,
+      route: '/api/resource',
+      method: 'GET',
+    });
+  });
+
+  it('respects caller-supplied method', async () => {
+    const fetchImpl = okFetch();
+    const hook = createSettleHook({ ...opts({ fetchImpl }), method: 'POST' });
+
+    await hook({
+      result: {
+        success: true,
+        transaction: settlement.txHash,
+      },
+      paymentPayload: {
+        resource: { url: '/api/resource' },
+      },
+    });
+
+    expect(fetchImpl).toHaveBeenCalledOnce();
+    expect(bodyOf(fetchImpl).method).toBe('POST');
+  });
+
+  it('ignores failed settlements', async () => {
+    const fetchImpl = okFetch();
+    const hook = createSettleHook(opts({ fetchImpl }));
+
+    await hook({
+      result: {
+        success: false,
+        transaction: settlement.txHash,
+      },
+    });
+
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 });
 
