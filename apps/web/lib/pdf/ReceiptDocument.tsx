@@ -158,6 +158,7 @@ export const ReceiptDocument: React.FC<{ data: ReceiptData }> = ({ data }) => (
           <Text style={{ fontSize: 10, color: '#666' }}>Thank you for your business!</Text>
         </View>
         <View style={styles.qrContainer}>
+          {/* eslint-disable-next-line jsx-a11y/alt-text */}
           <Image src={data.qrCodeDataUrl} style={styles.qrImage} />
           <Text style={styles.verificationText}>
             Scan to verify cryptographic proof on Stellar Expert

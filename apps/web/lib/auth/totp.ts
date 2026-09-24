@@ -1,4 +1,4 @@
-import { authenticator } from 'otplib';
+import { generateSecret, generateURI, verify } from 'otplib';
 
 export interface TotpConfig {
   secret: string;
@@ -12,8 +12,8 @@ export interface TotpConfig {
  * @param issuer The issuer name (e.g. Accensa)
  */
 export function generateTotpSecret(userEmail: string, issuer: string = 'Accensa'): TotpConfig {
-  const secret = authenticator.generateSecret();
-  const uri = authenticator.keyuri(userEmail, issuer, secret);
+  const secret = generateSecret();
+  const uri = generateURI({ label: userEmail, issuer, secret });
   return { secret, uri };
 }
 
@@ -24,8 +24,9 @@ export function generateTotpSecret(userEmail: string, issuer: string = 'Accensa'
  */
 export function verifyTotpToken(token: string, secret: string): boolean {
   try {
-    return authenticator.verify({ token, secret });
-  } catch (error) {
+    const result = verify({ token, secret });
+    return !!result;
+  } catch {
     return false;
   }
 }

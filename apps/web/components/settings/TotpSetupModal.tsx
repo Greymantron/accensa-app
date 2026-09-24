@@ -27,9 +27,11 @@ export const TotpSetupModal: React.FC<TotpSetupModalProps> = ({ isOpen, onClose,
         })
         .catch(err => console.error('Error generating TOTP:', err));
     } else {
-      setStep(1);
-      setToken('');
-      setError('');
+      setTimeout(() => {
+        setStep(1);
+        setToken('');
+        setError('');
+      }, 0);
     }
   }, [isOpen]);
 
@@ -52,6 +54,7 @@ export const TotpSetupModal: React.FC<TotpSetupModalProps> = ({ isOpen, onClose,
         setError('Invalid token. Please try again.');
       }
     } catch (err) {
+      console.error(err);
       setError('An error occurred during verification.');
     } finally {
       setIsVerifying(false);
@@ -73,7 +76,8 @@ export const TotpSetupModal: React.FC<TotpSetupModalProps> = ({ isOpen, onClose,
             </p>
             {qrCodeUrl ? (
               <div className="flex justify-center mb-4">
-                <img src={qrCodeUrl} alt="TOTP QR Code" className="w-48 h-48 border rounded" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={qrCodeUrl} alt={`TOTP QR Code for ${userEmail}`} className="w-48 h-48 border rounded" />
               </div>
             ) : (
               <div className="flex justify-center mb-4">
