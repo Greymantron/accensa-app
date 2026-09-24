@@ -8,11 +8,22 @@ const products = [
   { id: '3', name: 'Game Credits (1000)', price: 9.99, image: 'https://via.placeholder.com/150' },
 ];
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+}
+
+interface CartItem extends Product {
+  quantity: number;
+}
+
 export default function Home() {
-  const [cart, setCart] = useState<any[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [network, setNetwork] = useState<'testnet' | 'sandbox'>('testnet');
 
-  const addToCart = (product: any) => {
+  const addToCart = (product: Product) => {
     setCart((prev) => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
@@ -29,7 +40,7 @@ export default function Home() {
         <div className="flex items-center space-x-4">
           <select 
             value={network} 
-            onChange={(e) => setNetwork(e.target.value as any)}
+            onChange={(e) => setNetwork(e.target.value as 'testnet' | 'sandbox')}
             className="border p-2 rounded"
           >
             <option value="testnet">Testnet</option>

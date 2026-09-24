@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Keypad from '../../components/pos/Keypad';
 
+interface OfflineTransaction {
+  amount: string;
+  date: string;
+}
+
 export default function POS() {
   const [amount, setAmount] = useState('0');
-  const [offlineQueue, setOfflineQueue] = useState<any[]>([]);
+  const [offlineQueue, setOfflineQueue] = useState<OfflineTransaction[]>([]);
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
