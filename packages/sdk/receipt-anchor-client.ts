@@ -1,13 +1,10 @@
+import { Contract, Networks, nativeToScVal, rpc, xdr } from '@stellar/stellar-sdk';
 import {
-  Account,
-  Contract,
-  Networks,
-  TransactionBuilder,
-  nativeToScVal,
-  rpc,
-  scValToNative,
-  xdr,
-} from '@stellar/stellar-sdk';
+  buildSimulationTransaction,
+  decodeSimulationResult,
+  hexToScValBytes,
+  parseBatchRecord,
+} from './src/simulation';
 
 /**
  * Reads Accensa's on-chain `ReceiptAnchor` contract via Soroban RPC simulation.
@@ -72,10 +69,6 @@ export interface ReceiptAnchorClientOptions {
   rpcServerFactory?: (rpcUrl: string) => RpcServerLike;
 }
 
-function hexToScValBytes(hex: string) {
-  return xdr.ScVal.scvBytes(Buffer.from(hex.trim(), 'hex'));
-}
-
 /**
  * Reads a merchant's `ReceiptAnchor` contract - the default Accensa-operated
  * instance, or a custom one a merchant has deployed themselves.
@@ -100,6 +93,18 @@ export class ReceiptAnchorClient {
   readonly networkPassphrase: string;
   private readonly simulationSource: string;
   private readonly server: RpcServerLike;
+  /**
+   * Parsed `Contract` instance for `contractId`, built lazily on first use
+   * and cached for the life of the client.
+   *
+   * Caching matters for performance: `Contract` eagerly decodes and
+   * checksum-checks the contract ID, which is pure overhead on every
+   * repeat read. Laziness matters for the constructor contract: the
+   * documented options allow a placeholder `contractId` that is only ever
+   * resolved once a method is actually called, so we must not parse it in
+   * the constructor.
+   */
+  private contract: Contract | null = null;
 
   constructor(opts: ReceiptAnchorClientOptions = {}) {
     this.contractId = opts.contractId ?? DEFAULT_CONTRACT_ID;
@@ -111,27 +116,23 @@ export class ReceiptAnchorClient {
       : new rpc.Server(this.rpcUrl, { allowHttp: this.rpcUrl.startsWith('http://') });
   }
 
+  /** Returns the cached contract instance, parsing it on the first call. */
+  private get contractInstance(): Contract {
+    this.contract ??= new Contract(this.contractId);
+    return this.contract;
+  }
+
+  /** Runs one read-only contract method call and returns the decoded result. */
   private async simulate(method: string, args: xdr.ScVal[]): Promise<unknown> {
-    const contract = new Contract(this.contractId);
-    const source = new Account(this.simulationSource, '0');
-
-    const tx = new TransactionBuilder(source, {
-      fee: '100',
+    const tx = buildSimulationTransaction({
+      contract: this.contractInstance,
+      simulationSource: this.simulationSource,
       networkPassphrase: this.networkPassphrase,
-    })
-      .addOperation(contract.call(method, ...args))
-      .setTimeout(30)
-      .build();
-
+      method,
+      args,
+    });
     const sim = await this.server.simulateTransaction(tx);
-
-    if (rpc.Api.isSimulationError(sim)) {
-      throw new Error(sim.error);
-    }
-    if (!('result' in sim) || !sim.result?.retval) {
-      throw new Error(`${method} returned no value`);
-    }
-    return scValToNative(sim.result.retval);
+    return decodeSimulationResult(sim, method);
   }
 
   /**
@@ -156,14 +157,6 @@ export class ReceiptAnchorClient {
       nativeToScVal(batchId, { type: 'u64' }),
     ])) as Record<string, unknown>;
 
-    const root = raw.root;
-    return {
-      root: Buffer.isBuffer(root)
-        ? root.toString('hex')
-        : Buffer.from(root as Uint8Array).toString('hex'),
-      count: Number(raw.count),
-      periodStart: Number(raw.period_start),
-      periodEnd: Number(raw.period_end),
-    };
+    return parseBatchRecord(raw);
   }
 }

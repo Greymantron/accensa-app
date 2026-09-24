@@ -15,7 +15,7 @@ import { parseRole, type Role } from '@/lib/rbac';
 const secretKey = process.env.JWT_SECRET_KEY;
 const key = secretKey ? new TextEncoder().encode(secretKey) : null;
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // Define public and private paths.

@@ -55,6 +55,7 @@ export default defineConfig({
       JWT_SECRET_KEY: 'playwright-e2e-secret-key',
       MERCHANT_ADDRESS: 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF',
       DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/accensa_e2e_none',
+      NEXT_PUBLIC_STELLAR_NETWORK: 'testnet',
     },
   },
 });
