@@ -11,9 +11,9 @@ export interface AccensaProviderProps {
 export function AccensaProvider({ options, children }: AccensaProviderProps) {
   const client = useMemo(
     () => new AccensaClient(options),
-    [options.indexerUrl, options.headers, options.timeoutMs, options.cacheTtlMs]
+    [options.indexerUrl, options.headers, options.timeoutMs, options.cacheTtlMs],
   );
-  
+
   return <AccensaContext.Provider value={client}>{children}</AccensaContext.Provider>;
 }
 

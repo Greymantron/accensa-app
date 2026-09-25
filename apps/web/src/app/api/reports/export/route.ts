@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  
+
   // Filter parameters
   const filterRoute = searchParams.get('route');
   const filterPayer = searchParams.get('payer');
@@ -51,10 +51,10 @@ export async function GET(request: Request) {
         let batch: CsvPayment[] = [];
         await withMerchantClient(merchant!.id, async (client) => {
           await ensureSchema(client);
-          
+
           const predicates: string[] = [];
           const params: (string | number)[] = [merchant!.id];
-          
+
           if (filterRoute) {
             predicates.push(`route = $${params.length + 1}`);
             params.push(filterRoute);
@@ -75,22 +75,22 @@ export async function GET(request: Request) {
             predicates.push(`ts <= $${params.length + 1}`);
             params.push(toDate.toISOString());
           }
-          
+
           const filterSql = predicates.length ? ` AND ${predicates.join(' AND ')}` : '';
           const baseQuery = `SELECT tx_hash, ledger, payer, amount::text AS amount, asset, ts, route, method 
                              FROM payments WHERE merchant_id = $1 AND ts IS NOT NULL${filterSql} 
                              ORDER BY ts DESC, tx_hash DESC`;
-                             
+
           const query = `${baseQuery} LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
           const currentParams = [...params, limit, offset];
-          
+
           const result = await client.query(query, currentParams);
-          batch = result.rows.map(r => ({
-             ...r,
-             ts: r.ts instanceof Date ? r.ts.toISOString() : String(r.ts)
+          batch = result.rows.map((r) => ({
+            ...r,
+            ts: r.ts instanceof Date ? r.ts.toISOString() : String(r.ts),
           }));
         });
-        
+
         if (batch.length === 0) {
           hasMore = false;
         } else {
@@ -114,9 +114,6 @@ export async function GET(request: Request) {
     });
   } catch (error: unknown) {
     console.error('Error exporting payments:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

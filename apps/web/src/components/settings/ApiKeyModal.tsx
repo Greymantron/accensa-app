@@ -15,8 +15,8 @@ export function ApiKeyModal({ isOpen, onClose, onGenerate }: ApiKeyModalProps) {
   if (!isOpen) return null;
 
   const togglePermission = (perm: string) => {
-    setPermissions(prev => 
-      prev.includes(perm) ? prev.filter(p => p !== perm) : [...prev, perm]
+    setPermissions((prev) =>
+      prev.includes(perm) ? prev.filter((p) => p !== perm) : [...prev, perm],
     );
   };
 
@@ -36,7 +36,7 @@ export function ApiKeyModal({ isOpen, onClose, onGenerate }: ApiKeyModalProps) {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Key Name</label>
-            <input 
+            <input
               type="text"
               required
               className="w-full border rounded p-2"
@@ -45,13 +45,13 @@ export function ApiKeyModal({ isOpen, onClose, onGenerate }: ApiKeyModalProps) {
               onChange={(e) => setName(e.target.value)}
             />
           </div>
-          
+
           <div className="mb-6">
             <label className="block text-sm font-medium mb-2">Scoped Permissions</label>
             <div className="space-y-2">
               <label className="flex items-center">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={permissions.includes('read')}
                   onChange={() => togglePermission('read')}
                   className="mr-2"
@@ -59,8 +59,8 @@ export function ApiKeyModal({ isOpen, onClose, onGenerate }: ApiKeyModalProps) {
                 Read (View transactions and balances)
               </label>
               <label className="flex items-center">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={permissions.includes('write')}
                   onChange={() => togglePermission('write')}
                   className="mr-2"
@@ -68,8 +68,8 @@ export function ApiKeyModal({ isOpen, onClose, onGenerate }: ApiKeyModalProps) {
                 Write (Create escrows and invoices)
               </label>
               <label className="flex items-center">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={permissions.includes('admin')}
                   onChange={() => togglePermission('admin')}
                   className="mr-2"
@@ -80,14 +80,14 @@ export function ApiKeyModal({ isOpen, onClose, onGenerate }: ApiKeyModalProps) {
           </div>
 
           <div className="flex justify-end space-x-2">
-            <button 
+            <button
               type="button"
               className="px-4 py-2 border rounded hover:bg-gray-100"
               onClick={onClose}
             >
               Cancel
             </button>
-            <button 
+            <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
               disabled={!name.trim() || permissions.length === 0}
