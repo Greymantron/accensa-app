@@ -17,7 +17,7 @@ export default function ProductCard({ product, onAdd }: ProductCardProps) {
       <div className="p-4">
         <h3 className="font-semibold text-lg">{product.name}</h3>
         <p className="text-gray-600">${product.price.toFixed(2)}</p>
-        <button 
+        <button
           onClick={onAdd}
           className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
         >

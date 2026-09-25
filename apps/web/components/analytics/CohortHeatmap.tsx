@@ -22,7 +22,7 @@ export default function CohortHeatmap({ data }: CohortHeatmapProps) {
     return 'bg-gray-50 text-gray-400';
   };
 
-  const maxMonths = Math.max(...data.map(d => d.retention.length));
+  const maxMonths = Math.max(...data.map((d) => d.retention.length));
 
   return (
     <div className="overflow-x-auto border rounded bg-white shadow-sm">
@@ -32,7 +32,9 @@ export default function CohortHeatmap({ data }: CohortHeatmapProps) {
             <th className="px-4 py-2 font-semibold">Cohort</th>
             <th className="px-4 py-2 font-semibold">Users</th>
             {Array.from({ length: maxMonths }).map((_, i) => (
-              <th key={i} className="px-4 py-2 font-semibold text-center">Month {i}</th>
+              <th key={i} className="px-4 py-2 font-semibold text-center">
+                Month {i}
+              </th>
             ))}
           </tr>
         </thead>
@@ -42,10 +44,10 @@ export default function CohortHeatmap({ data }: CohortHeatmapProps) {
               <td className="px-4 py-2 font-medium">{row.cohort}</td>
               <td className="px-4 py-2 text-gray-600">{row.size}</td>
               {row.retention.map((pct, j) => (
-                <td 
-                  key={j} 
+                <td
+                  key={j}
                   className={`px-4 py-2 text-center font-medium ${getBackgroundColor(pct)}`}
-                  title={`${pct}% retention (${Math.round((pct/100) * row.size)} users)`}
+                  title={`${pct}% retention (${Math.round((pct / 100) * row.size)} users)`}
                 >
                   {pct.toFixed(0)}%
                 </td>

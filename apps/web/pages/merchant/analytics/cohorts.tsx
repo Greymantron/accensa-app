@@ -13,16 +13,18 @@ const mockCohortData = [
 ];
 
 export default function CohortAnalytics() {
-  const aov = 142.50;
-  const ltv = 854.20;
+  const aov = 142.5;
+  const ltv = 854.2;
   const refundFreq = 2.4;
 
   const exportCSV = () => {
-    const header = ['Cohort', 'Size', ...Array.from({ length: 6 }).map((_, i) => `Month ${i}`)].join(',');
-    const rows = mockCohortData.map(d => 
-      [d.cohort, d.size, ...d.retention].join(',')
-    ).join('\n');
-    
+    const header = [
+      'Cohort',
+      'Size',
+      ...Array.from({ length: 6 }).map((_, i) => `Month ${i}`),
+    ].join(',');
+    const rows = mockCohortData.map((d) => [d.cohort, d.size, ...d.retention].join(',')).join('\n');
+
     const csvContent = `data:text/csv;charset=utf-8,${header}\n${rows}`;
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
@@ -45,7 +47,7 @@ export default function CohortAnalytics() {
             <h1 className="text-3xl font-bold text-gray-900">Cohort Analysis</h1>
             <p className="text-gray-500 mt-1">Track customer retention over time</p>
           </div>
-          <button 
+          <button
             onClick={exportCSV}
             className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded shadow-sm hover:bg-gray-50 font-medium"
           >

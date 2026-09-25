@@ -30,9 +30,11 @@ export default function Keypad({ onInput, onClear, onSubmit }: KeypadProps) {
           key={key}
           onClick={() => handlePress(key)}
           className={`h-16 text-2xl font-bold rounded-lg shadow active:scale-95 transition-transform ${
-            key === 'Pay' ? 'bg-blue-600 text-white' : 
-            key === 'C' ? 'bg-red-100 text-red-600' : 
-            'bg-gray-100 text-gray-900'
+            key === 'Pay'
+              ? 'bg-blue-600 text-white'
+              : key === 'C'
+                ? 'bg-red-100 text-red-600'
+                : 'bg-gray-100 text-gray-900'
           }`}
           style={{ minWidth: '48px', minHeight: '48px' }}
         >

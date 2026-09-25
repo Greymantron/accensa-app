@@ -10,9 +10,9 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ['127.0.0.1', 'localhost'],
   experimental: {
     sri: {
-      algorithm: 'sha256'
-    }
-  }
+      algorithm: 'sha256',
+    },
+  },
 };
 
 export default nextConfig;

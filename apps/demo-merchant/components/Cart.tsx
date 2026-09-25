@@ -14,7 +14,7 @@ interface CartProps {
 
 export default function Cart({ cart, network }: CartProps) {
   const [discountCode, setDiscountCode] = useState('');
-  
+
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const tax = subtotal * 0.08; // 8% tax
   const discount = discountCode === 'DEMO10' ? subtotal * 0.1 : 0;
@@ -32,9 +32,11 @@ export default function Cart({ cart, network }: CartProps) {
   return (
     <div className="p-4 border rounded bg-white shadow-sm">
       <ul className="mb-4 space-y-2">
-        {cart.map(item => (
+        {cart.map((item) => (
           <li key={item.id} className="flex justify-between">
-            <span>{item.name} x{item.quantity}</span>
+            <span>
+              {item.name} x{item.quantity}
+            </span>
             <span>${(item.price * item.quantity).toFixed(2)}</span>
           </li>
         ))}
@@ -59,18 +61,18 @@ export default function Cart({ cart, network }: CartProps) {
         <span>Total</span>
         <span>${total.toFixed(2)}</span>
       </div>
-      
+
       <div className="mt-4 flex space-x-2">
-        <input 
-          type="text" 
-          placeholder="Discount code (DEMO10)" 
+        <input
+          type="text"
+          placeholder="Discount code (DEMO10)"
           className="border p-2 rounded w-full text-sm"
           value={discountCode}
           onChange={(e) => setDiscountCode(e.target.value)}
         />
       </div>
 
-      <button 
+      <button
         onClick={handleCheckout}
         className="mt-4 w-full bg-green-600 text-white py-3 px-4 rounded font-bold hover:bg-green-700 transition flex items-center justify-center"
       >

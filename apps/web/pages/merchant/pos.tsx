@@ -10,10 +10,11 @@ interface OfflineTransaction {
 export default function POS() {
   const [amount, setAmount] = useState('0');
   const [offlineQueue, setOfflineQueue] = useState<OfflineTransaction[]>([]);
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== 'undefined' ? navigator.onLine : true,
+  );
 
   useEffect(() => {
-    setIsOnline(navigator.onLine);
     const handleOnline = () => {
       setIsOnline(true);
       // Process offline queue when back online
@@ -34,7 +35,7 @@ export default function POS() {
   }, [offlineQueue]);
 
   const handleInput = (val: string) => {
-    setAmount(prev => (prev === '0' ? val : prev + val));
+    setAmount((prev) => (prev === '0' ? val : prev + val));
   };
 
   const handleClear = () => {
@@ -44,7 +45,7 @@ export default function POS() {
   const handleSubmit = () => {
     const tx = { amount, date: new Date().toISOString() };
     if (!isOnline) {
-      setOfflineQueue(prev => [...prev, tx]);
+      setOfflineQueue((prev) => [...prev, tx]);
       alert('You are offline. Transaction queued.');
     } else {
       alert(`Processing payment for $${(parseInt(amount) / 100).toFixed(2)}`);
@@ -58,7 +59,10 @@ export default function POS() {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <Head>
         <title>Accensa POS</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
+        />
       </Head>
 
       <div className="w-full max-w-sm bg-white shadow-lg rounded-xl p-6 flex flex-col items-center">
@@ -67,11 +71,9 @@ export default function POS() {
             Offline Mode ({offlineQueue.length} queued)
           </div>
         )}
-        
+
         <div className="text-gray-500 mb-2">Total Amount</div>
-        <div className="text-5xl font-mono font-bold mb-8 tracking-tighter">
-          ${displayAmount}
-        </div>
+        <div className="text-5xl font-mono font-bold mb-8 tracking-tighter">${displayAmount}</div>
 
         <Keypad onInput={handleInput} onClear={handleClear} onSubmit={handleSubmit} />
       </div>

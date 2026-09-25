@@ -37,7 +37,7 @@ export function formatCsvRow(payment: CsvPayment): string {
  * Creates a stream that yields CSV bytes without memory exhaustion.
  */
 export function createCsvStream(
-  paymentGenerator: AsyncGenerator<CsvPayment[]>
+  paymentGenerator: AsyncGenerator<CsvPayment[]>,
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   return new ReadableStream({
@@ -63,6 +63,6 @@ export function createCsvStream(
     },
     cancel() {
       paymentGenerator.return?.(null);
-    }
+    },
   });
 }
