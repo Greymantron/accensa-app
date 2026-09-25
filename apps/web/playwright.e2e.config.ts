@@ -39,7 +39,10 @@ export default defineConfig({
       maxDiffPixelRatio: 0.01,
     },
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+  ],
   webServer: {
     // `next dev` rather than a production build: the app's API routes are
     // type-checked lazily per request, and the e2e specs intercept every API
