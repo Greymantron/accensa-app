@@ -26,7 +26,8 @@ export default function SecuritySettings() {
           </h3>
           <div className="mt-2 max-w-xl text-sm text-gray-500 dark:text-gray-300">
             <p>
-              Add an extra layer of security to your account by requiring more than just a password to sign in and make sensitive configuration changes (like updating treasury payouts).
+              Add an extra layer of security to your account by requiring more than just a password
+              to sign in and make sensitive configuration changes (like updating treasury payouts).
             </p>
           </div>
           <div className="mt-5">
@@ -66,7 +67,9 @@ export default function SecuritySettings() {
             <p>Operations below require 2FA challenge verification before saving.</p>
           </div>
           <div className="mt-5 border-t border-gray-200 dark:border-gray-700 pt-5">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Treasury Payout Address</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Treasury Payout Address
+            </label>
             <div className="mt-1 flex rounded-md shadow-sm">
               <input
                 type="text"

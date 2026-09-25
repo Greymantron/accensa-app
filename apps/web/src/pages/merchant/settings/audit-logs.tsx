@@ -12,8 +12,8 @@ const MOCK_LOGS: AuditLog[] = [
     actionType: 'Changed Treasury Address',
     details: {
       before: { address: 'GABC...' },
-      after: { address: 'GXYZ...' }
-    }
+      after: { address: 'GXYZ...' },
+    },
   },
   {
     id: 'log-2',
@@ -22,8 +22,8 @@ const MOCK_LOGS: AuditLog[] = [
     timestamp: new Date(Date.now() - 86400000).toISOString(),
     actionType: 'Issued Refund',
     details: {
-      description: 'Refunded $45.00 for order #12345'
-    }
+      description: 'Refunded $45.00 for order #12345',
+    },
   },
   {
     id: 'log-3',
@@ -32,9 +32,9 @@ const MOCK_LOGS: AuditLog[] = [
     timestamp: new Date(Date.now() - 172800000).toISOString(),
     actionType: 'Revoked API Key',
     details: {
-      description: 'Revoked key ending in ...8f9a'
-    }
-  }
+      description: 'Revoked key ending in ...8f9a',
+    },
+  },
 ];
 
 export default function AuditLogsPage() {
@@ -47,10 +47,10 @@ export default function AuditLogsPage() {
     setTimeout(() => {
       let filtered = [...MOCK_LOGS];
       if (filters.actionType) {
-        filtered = filtered.filter(l => l.actionType === filters.actionType);
+        filtered = filtered.filter((l) => l.actionType === filters.actionType);
       }
       if (filters.actor) {
-        filtered = filtered.filter(l => l.actor.includes(filters.actor!));
+        filtered = filtered.filter((l) => l.actor.includes(filters.actor!));
       }
       setLogs(filtered);
       setIsLoading(false);
@@ -71,15 +71,12 @@ export default function AuditLogsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Team Activity Logs</h1>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Monitor actions performed by team members within your organization. These logs are tamper-evident and can be exported for compliance auditing.
+          Monitor actions performed by team members within your organization. These logs are
+          tamper-evident and can be exported for compliance auditing.
         </p>
       </div>
 
-      <AuditTable 
-        logs={logs} 
-        isLoading={isLoading} 
-        onFilterChange={fetchLogs} 
-      />
+      <AuditTable logs={logs} isLoading={isLoading} onFilterChange={fetchLogs} />
     </div>
   );
 }

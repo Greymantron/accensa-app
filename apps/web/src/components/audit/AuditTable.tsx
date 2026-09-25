@@ -29,13 +29,14 @@ export const AuditTable: React.FC<AuditTableProps> = ({ logs, isLoading, onFilte
   };
 
   const handleExport = () => {
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + "Timestamp,Actor,Action,IP Address\n"
-      + logs.map(e => `${e.timestamp},${e.actor},${e.actionType},${e.ipAddress}`).join("\n");
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      'Timestamp,Actor,Action,IP Address\n' +
+      logs.map((e) => `${e.timestamp},${e.actor},${e.actionType},${e.ipAddress}`).join('\n');
     const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "audit_logs_export.csv");
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'audit_logs_export.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -45,7 +46,7 @@ export const AuditTable: React.FC<AuditTableProps> = ({ logs, isLoading, onFilte
     <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">Audit Trail</h2>
-        <button 
+        <button
           onClick={handleExport}
           className="px-4 py-2 bg-blue-50 text-blue-700 dark:bg-blue-900 dark:text-blue-200 rounded-md text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-800"
         >
@@ -54,16 +55,16 @@ export const AuditTable: React.FC<AuditTableProps> = ({ logs, isLoading, onFilte
       </div>
 
       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-6">
-        <input 
-          type="text" 
-          placeholder="Filter by actor (email)" 
+        <input
+          type="text"
+          placeholder="Filter by actor (email)"
           value={filterActor}
-          onChange={e => setFilterActor(e.target.value)}
+          onChange={(e) => setFilterActor(e.target.value)}
           className="border border-gray-300 rounded-md p-2 text-sm w-full sm:w-64"
         />
-        <select 
+        <select
           value={filterAction}
-          onChange={e => setFilterAction(e.target.value)}
+          onChange={(e) => setFilterAction(e.target.value)}
           className="border border-gray-300 rounded-md p-2 text-sm w-full sm:w-64"
         >
           <option value="">All Actions</option>
@@ -72,7 +73,7 @@ export const AuditTable: React.FC<AuditTableProps> = ({ logs, isLoading, onFilte
           <option value="Issued Refund">Issued Refund</option>
           <option value="Invited Team Member">Invited Team Member</option>
         </select>
-        <button 
+        <button
           onClick={handleApplyFilters}
           className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium"
         >
@@ -89,11 +90,21 @@ export const AuditTable: React.FC<AuditTableProps> = ({ logs, isLoading, onFilte
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actor</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Timestamp
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actor
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Action
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  IP Address
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Details
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -113,7 +124,7 @@ export const AuditTable: React.FC<AuditTableProps> = ({ logs, isLoading, onFilte
                       {log.ipAddress}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button 
+                      <button
                         onClick={() => setExpandedId(expandedId === log.id ? null : log.id)}
                         className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                       >
@@ -125,7 +136,9 @@ export const AuditTable: React.FC<AuditTableProps> = ({ logs, isLoading, onFilte
                     <tr>
                       <td colSpan={5} className="px-6 py-4 bg-gray-50 dark:bg-gray-900">
                         <div className="text-sm text-gray-700 dark:text-gray-300">
-                          {log.details.description && <p className="mb-2">{log.details.description}</p>}
+                          {log.details.description && (
+                            <p className="mb-2">{log.details.description}</p>
+                          )}
                           {log.details.before && log.details.after && (
                             <div className="grid grid-cols-2 gap-4 mt-2">
                               <div>
